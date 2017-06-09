@@ -12,6 +12,8 @@
 #include <locale>
 namespace BFS = boost::filesystem;
 
+#include "copy_folder.h"
+
 using json = nlohmann::json;
 using namespace std;
 
@@ -134,14 +136,14 @@ int main()
 			cout << hf.first << endl;
 			for (auto f : hf.second) {
 				//cout << setw(10) << f << setw(3) << fh_count[f];
-				cout << setw(3) << fh_count[f] << " | " << fp_map[f].string();
+				cout << setw(3) << fh_count[f] << " | " << fp_map[f].string()  << " | " << fp_map[f].stem().string();
 				if (f == hf_max[hf.first]) cout << "   <<<" << endl;
 				else cout << endl;
 			}
 			cout << endl;
 		}			
-	
 	*/
+	
 	
 	//choose folder	
 	vector<string> f_max;
@@ -169,5 +171,20 @@ int main()
 	for (auto hf : hf_map)
 		if (!is_contained(hf.first, h_from_f_max)) cout << hf.first << " missing!" << endl;
 	
+	/*
+	//checking chosen path & stem
+	for (auto f : f_max)
+		cout << setw(40) << fp_map[f].filename().string()  << " | " << fp_map[f].string() << endl;
+	*/
+	
+	//COPY FOLDER!
+	
+	int inow = 0;
+	int imax = f_max.size();
+	for (auto f : f_max) {
+		copy_folder(fp_map[f], BFS::path("OUTPUT"));
+		cout << "( " << ++inow << " / " << imax << " ) " << fp_map[f].filename().string() << endl;
+	}
+
 	return 0;
 }
