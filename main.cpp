@@ -62,7 +62,7 @@ int main()
 	}
 
 	sqlite3_stmt *statement;
-	const char *query = "SELECT parent, folder, path FROM song WHERE hash = ?";
+	const char *query = "SELECT parent, folder, path FROM song WHERE hash = ? ORDER BY folder";
 	sqlite3_prepare_v2(db, query, strlen(query), &statement, NULL);
 	
 	for (auto th : th_map) {
@@ -114,22 +114,60 @@ int main()
 	
 	// -------- Folder Choose -------- //
 	
-	/*
-	cout << endl;
-	for (auto fp : fp_map)
-		cout << setw(10) << fp.first << "\t|\t" << fp.second.string() << endl;
-	*/
+	//find max folder
+	map<string, string> hf_max;
+
+	for (auto hf : hf_map) {
+		int max_count = 0;
+		for (auto f : hf.second)
+			if (fh_count[f] > max_count) {
+				hf_max[hf.first] = f;
+				max_count = fh_count[f];
+			}
+	}
+		
 	
-	for (auto hf : hf_map)		
+	/*
+	//checking h-f list
+	for (auto hf : hf_map)
 		if (hf.second.size() > 1) {
 			cout << hf.first << endl;
-			for (auto f : hf.second)
+			for (auto f : hf.second) {
 				//cout << setw(10) << f << setw(3) << fh_count[f];
-				cout << setw(3) << fh_count[f] << " | " << fp_map[f].string() << endl;
+				cout << setw(3) << fh_count[f] << " | " << fp_map[f].string();
+				if (f == hf_max[hf.first]) cout << "   <<<" << endl;
+				else cout << endl;
+			}
 			cout << endl;
+		}			
+	
+	*/
+	
+	//choose folder	
+	vector<string> f_max;
+	
+	for (auto hf : hf_map) {
+		string hash = hf.first;
+		if (is_contained(hf_max[hash], f_max)) continue;
+		else {
+			for (auto f : hf.second) 
+				if (is_contained(f, f_max))
+					cout << "Max Folder Mismatch!" << endl;
 		}
-			
-
-
+		f_max.push_back(hf_max[hash]);
+	}
+	
+	//checking f_max integrity
+	vector<string> h_from_f_max;
+	
+	for (auto f : f_max)
+		for (auto h : fh_map[f]) {
+			if (!is_contained(h, h_from_f_max)) h_from_f_max.push_back(h);
+			else cout << h << " multiple detected!" << endl;
+		}
+		
+	for (auto hf : hf_map)
+		if (!is_contained(hf.first, h_from_f_max)) cout << hf.first << " missing!" << endl;
+	
 	return 0;
 }
