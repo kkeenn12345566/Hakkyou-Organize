@@ -1,10 +1,10 @@
 CC			= g++
-CFLAGS	= -std=c++11 -L.
-LIBS		= -lsqlite3
-INCLUDES	=
-DBG		= -g
-SOURCES	= 
-OBJECTS	= $(SOURCES:.cpp=.o)
+CFLAGS		= -std=c++11
+LIBS		= -L. -lsqlite3 -lboost_filesystem -lboost_system
+INCLUDES	= -IC:\MinGW\include
+DBG			= -g
+SOURCES		= 
+OBJECTS		= $(SOURCES:.cpp=.o)
 
 all: main $(SOURCES)
 
