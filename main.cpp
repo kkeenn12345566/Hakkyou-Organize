@@ -12,6 +12,8 @@
 #include <locale>
 namespace BFS = boost::filesystem;
 
+#include <codecvt>
+
 #include "copy_folder.h"
 
 using json = nlohmann::json;
@@ -67,6 +69,8 @@ int main()
 	const char *query = "SELECT parent, folder, path FROM song WHERE hash = ? ORDER BY folder";
 	sqlite3_prepare_v2(db, query, strlen(query), &statement, NULL);
 	
+	wstring_convert<codecvt_utf8_utf16<wchar_t>> converter;
+	
 	for (auto th : th_map) {
 		string hash = th.second;
 		sqlite3_bind_text(statement, 1, hash.c_str(), -1, SQLITE_STATIC);
@@ -92,7 +96,8 @@ int main()
 				fh_map[folder].push_back(hash);
 			}
 			
-			BFS::path p(path);
+			wstring wpath = converter.from_bytes(path);
+			BFS::path p(wpath);
 			if (fp_map[folder] == BFS::path())
 				fp_map[folder] = p.parent_path();
 				//fp_map[folder] = p;
@@ -183,7 +188,8 @@ int main()
 	int imax = f_max.size();
 	for (auto f : f_max) {
 		copy_folder(fp_map[f], BFS::path("OUTPUT"));
-		cout << "( " << ++inow << " / " << imax << " ) " << fp_map[f].filename().string() << endl;
+		//cout << "( " << ++inow << " / " << imax << " ) " << fp_map[f].filename() << endl;
+		cout << "( " << ++inow << " / " << imax << " ) " << endl;
 	}
 
 	return 0;

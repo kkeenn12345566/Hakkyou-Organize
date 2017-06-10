@@ -15,8 +15,8 @@ void copy_folder(BFS::path src, BFS::path dst) {
 	locale::global(loc);
 	BFS::path::imbue(locale());
 	
-	//if (BFS::exists(src)) {
-		//if (BFS::is_directory(src)) {
+	if (BFS::exists(src)) {
+		if (BFS::is_directory(src)) {
 			//cout << src << " is a directory containing:" << endl;
 			for (auto& entry : boost::make_iterator_range(BFS::directory_iterator(src), {})) {
 				//cout << entry << endl;
@@ -26,9 +26,9 @@ void copy_folder(BFS::path src, BFS::path dst) {
 				BFS::create_directory(dst/folder);
 				BFS::copy_file(entry.path(), dst/folder/file);
 			}
-		//}
-		//else
-			//cout << src << " exists, but is neither a regular file nor a directory\n";
-	//} else
-		//cout << src << " does not exist\n";//
+		}
+		else
+			cout << src << " exists, but is neither a regular file nor a directory\n";
+	} else
+		cout << src << " does not exist\n";
 }	
